@@ -1,0 +1,26 @@
+broadcast: "<white>• <#949bd1><player> <#656b96>voted | <#656b96>reward: <#949bd1><reward> <#656b96>| <#949bd1><votes> <#656b96>votes"
+
+prefix-line: "<#ffffff>•<#7777777>--- <#ffffff>feather64 Votes <#7777777>----------------------------------<#ffffff>•"
+suffix-line: "<#ffffff>•<#7777777>----------------------------------------------------<#ffffff>•"
+
+
+vote-sites: "<#656b96>Vote on 4 websites daily for a total of 64 logs:
+            \n<#949bd1><hover:show_text:'Click to Vote'><click:open_url:https://www.planetminecraft.com/server/straight-up-survival-no-protection-smp-4081761/vote>planetminecraft.com</click></hover>
+            \n<#949bd1><hover:show_text:'Click to Vote'><click:open_url:https://minecraft-server-list.com/server/421677/vote>minecraft-server-list.com</click></hover>
+            \n<#949bd1><hover:show_text:'Click to Vote'><click:open_url:https://minecraft-server.net/vote/SUSMinecraft>minecraft-server.net</click></hover>
+            \n<#949bd1><hover:show_text:'Click to Vote'><click:open_url:https://minecraft-mp.com/server/276921/vote>minecraft-mp.com</click></hover>"
+
+leaderboard:
+  header: "<#656b96><voter><#656b96><votes>"
+  entry: "<#949bd1><voter><#949bd1><votes>"
+
+rewards:
+  oak_log: 16
+  spruce_log: 16
+  birch_log: 16
+  jungle_log: 16
+  acacia_log: 16
+  dark_oak_log: 16
+  mangrove_log: 16
+  crimson_stem: 16
+  warped_stem: 16

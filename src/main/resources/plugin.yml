@@ -1,0 +1,10 @@
+name: FeatherVote
+version: '${project.version}'
+main: com.zerek.feathervote.FeatherVote
+api-version: 1.19
+depend: [ Votifier ]
+authors: [ Zerek ]
+description: Reward voters with items. Includes randomizer.
+commands:
+  vote:
+    description: View voting sites or the vote leaderboard.

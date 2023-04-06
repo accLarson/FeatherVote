@@ -21,9 +21,13 @@ public class VoteCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if (args.length == 0) plugin.getVoteManager().displayVoteSites(sender);
+
         else if (args.length == 1 && args[0].equalsIgnoreCase("leaderboard")) plugin.getVoteManager().displayTopVoters(10,sender);
+
         else if (sender instanceof ConsoleCommandSender && args.length == 1 && args[0].equalsIgnoreCase("reset")) plugin.getVoteManager().clearVotes();
+
         else sender.sendMessage(ChatColor.of("#656b96") + "invalid command");
+
         return true;
     }
 }

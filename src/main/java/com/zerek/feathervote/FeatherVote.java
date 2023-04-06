@@ -9,8 +9,6 @@ import com.zerek.feathervote.utilities.ChatUtility;
 import com.zerek.feathervote.utilities.RewardUtility;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Calendar;
-
 public final class FeatherVote extends JavaPlugin {
 
     private DatabaseManager databaseManager;
@@ -25,11 +23,15 @@ public final class FeatherVote extends JavaPlugin {
         this.saveDefaultConfig();
 
         this.databaseManager = new DatabaseManager(this);
+
         this.rewardUtility = new RewardUtility(this);
+
         this.voteManager = new VoteManager(this);
+
         this.chatUtility = new ChatUtility(this);
 
         this.getCommand("vote").setExecutor(new VoteCommand(this));
+
         this.getCommand("vote").setTabCompleter(new VoteTabCompleter());
 
         getServer().getPluginManager().registerEvents(new VotifierListener(this),this);
@@ -37,6 +39,7 @@ public final class FeatherVote extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
         this.voteManager.updateDatabase();
     }
 

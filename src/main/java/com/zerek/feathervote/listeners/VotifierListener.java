@@ -5,7 +5,6 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 import com.zerek.feathervote.FeatherVote;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 

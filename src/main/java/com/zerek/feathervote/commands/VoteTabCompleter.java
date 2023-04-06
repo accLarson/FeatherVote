@@ -12,8 +12,11 @@ import java.util.List;
 public class VoteTabCompleter implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+
         List<String> options = new ArrayList<>();
+
         options.add("leaderboard");
+
         return options;
     }
 }

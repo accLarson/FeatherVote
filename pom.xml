@@ -6,7 +6,7 @@
 
     <groupId>com.zerek</groupId>
     <artifactId>FeatherVote</artifactId>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
     <packaging>jar</packaging>
 
     <name>FeatherVote</name>
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>3.1-j11</version>
+            <version>3.4-j11</version>
         </dependency>
     </dependencies>
 </project>

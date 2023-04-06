@@ -72,6 +72,8 @@ public class DatabaseManager {
             String query = "CREATE TABLE IF NOT EXISTS `VOTES` ("
                     + " `mojang_uuid`                   VARCHAR(255) PRIMARY KEY NOT NULL, "
                     + " `updated_at`                    DATETIME, "
+                    + " `rewards_owed`                  INT, "
+                    + " `special_rewards_owed`          INT, "
                     + " `vote_count_total`              INT, "
                     + " `vote_count_previous_month`     INT, "
                     + " `vote_count_current_month`      INT );";

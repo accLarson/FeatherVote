@@ -33,6 +33,8 @@ public class RewardUtility {
         }
 
         broadcast = plugin.getConfig().getString("broadcast");
+
+
     }
 
     public void rewardPlayer(Player player, int voteCount) {

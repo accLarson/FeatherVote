@@ -18,13 +18,13 @@ public class VotifierListener implements Listener{
 
     @EventHandler
     public void onVote(final VotifierEvent event) {
-        //Get vote data
+
         Vote vote = event.getVote();
 
-        //Get username provided from vote data
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(vote.getUsername());
 
-        //Check if player is online
-        plugin.getVoteManager().addVote(offlinePlayer);
+        if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) plugin.getVoterManager().processVote(offlinePlayer);
+
+        else plugin.getLogger().info("Received a vote from unknown username: vote.getUsername() - no reward processed." );
     }
 }

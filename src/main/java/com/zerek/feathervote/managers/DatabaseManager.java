@@ -47,7 +47,7 @@ public class DatabaseManager {
 
             if(!connection.isClosed()) {
 
-                ResultSet rs = connection.getMetaData().getTables(null, null, "VOTES", null);
+                ResultSet rs = connection.getMetaData().getTables(null, null, "VOTERS", null);
 
                 return rs.next();
             }
@@ -67,16 +67,16 @@ public class DatabaseManager {
 
         if(!this.existsTable()) {
 
-            plugin.getLogger().info("Creating VOTES table.");
+            plugin.getLogger().info("Creating VOTERS table.");
 
-            String query = "CREATE TABLE IF NOT EXISTS `VOTES` ("
+            String query = "CREATE TABLE IF NOT EXISTS `VOTERS` ("
                     + " `mojang_uuid`                   VARCHAR(255) PRIMARY KEY NOT NULL, "
                     + " `updated_at`                    DATETIME, "
-                    + " `rewards_owed`                  INT, "
-                    + " `special_rewards_owed`          INT, "
-                    + " `vote_count_total`              INT, "
-                    + " `vote_count_previous_month`     INT, "
-                    + " `vote_count_current_month`      INT );";
+                    + " `rewards_owed`                  INT DEFAULT 0, "
+                    + " `special_rewards_owed`          INT DEFAULT 0, "
+                    + " `vote_count_total`              INT DEFAULT 0, "
+                    + " `vote_count_previous_month`     INT DEFAULT 0, "
+                    + " `vote_count_current_month`      INT DEFAULT 0 );";
 
             try {
 
@@ -87,7 +87,7 @@ public class DatabaseManager {
 
                 e.printStackTrace();
 
-                plugin.getLogger().severe("Unable to create VOTES table.");
+                plugin.getLogger().severe("Unable to create VOTERS table.");
             }
         }
     }

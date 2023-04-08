@@ -3,30 +3,37 @@ package com.zerek.feathervote;
 import com.zerek.feathervote.commands.VoteCommand;
 import com.zerek.feathervote.commands.VoteTabCompleter;
 import com.zerek.feathervote.listeners.VotifierListener;
+import com.zerek.feathervote.managers.ConfigManager;
 import com.zerek.feathervote.managers.DatabaseManager;
-import com.zerek.feathervote.managers.VoteManager;
+import com.zerek.feathervote.managers.MessagesManager;
+import com.zerek.feathervote.managers.VoterManager;
 import com.zerek.feathervote.utilities.ChatUtility;
-import com.zerek.feathervote.utilities.RewardUtility;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class FeatherVote extends JavaPlugin {
 
-    private DatabaseManager databaseManager;
-    private VoteManager voteManager;
+    private ConfigManager configManager;
 
-    private RewardUtility rewardUtility;
+    private MessagesManager messagesManager;
+
+    private DatabaseManager databaseManager;
+
+    private VoterManager voterManager;
+    private RewardManager rewardManager;
     private ChatUtility chatUtility;
 
     @Override
     public void onEnable() {
 
-        this.saveDefaultConfig();
+        this.configManager = new ConfigManager(this);
+
+        this.messagesManager = new MessagesManager(this);
 
         this.databaseManager = new DatabaseManager(this);
 
-        this.rewardUtility = new RewardUtility(this);
+        this.voterManager = new VoterManager(this);
 
-        this.voteManager = new VoteManager(this);
+        this.rewardManager = new RewardManager(this);
 
         this.chatUtility = new ChatUtility(this);
 
@@ -36,19 +43,28 @@ public final class FeatherVote extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new VotifierListener(this),this);
     }
-
     @Override
     public void onDisable() {
-
-        this.voteManager.updateDatabase();
     }
 
-    public RewardUtility getRewardUtility() {
-        return rewardUtility;
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 
-    public VoteManager getVoteManager() {
-        return voteManager;
+    public MessagesManager getMessagesManager() {
+        return messagesManager;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public RewardManager getRewardManager() {
+        return rewardManager;
+    }
+
+    public VoterManager getVoterManager() {
+        return voterManager;
     }
 
     public ChatUtility getChatUtility() {

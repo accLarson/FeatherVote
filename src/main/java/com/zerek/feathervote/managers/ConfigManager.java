@@ -31,4 +31,5 @@ public class ConfigManager {
     public List<ItemStack> getRewardOptionsMap() {
         return rewardOptionsMap;
     }
+
 }

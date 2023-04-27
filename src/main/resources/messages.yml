@@ -4,7 +4,10 @@ SuffixLine: "<#ffffff>•<#7777777>---------------------------------------------
 OnlineAnnounce: "<white>• <#949bd1><player> <#656b96>voted | <#656b96>reward: <#949bd1><reward> <#656b96>| <#949bd1><votes> <#656b96>votes this month!"
 OfflineAnnounce: "<white>• <#949bd1><player> <#656b96>voted | <#656b96>reward given on next login <#656b96>| <#949bd1><votes> <#656b96>votes this month!"
 
-LoginVoteNotice: "<white>• <#656b96>You voted <#949bd1><votes> <#656b96>time(s) since you were last online. Thank you!"
+OnlineSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>voted 64 times | <#656b96>special reward: <#949bd1><reward>"
+OfflineSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>voted 64 times | <#656b96>special reward given on next login. "
+
+LoginVoteNotice: "<white>• <#656b96>You've received vote rewards for voting while offline. Thank you!"
 
 LeaderboardHeader: "<#656b96><voter><#656b96><month_votes><#656b96><previous_votes><#656b96><total_votes>"
 LeaderboardEntry: "<#949bd1><voter><#949bd1><month_votes><#949bd1><previous_votes><#949bd1><total_votes>"

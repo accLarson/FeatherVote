@@ -60,7 +60,7 @@ public class MessagesManager {
 
         VoterManager voterManager = plugin.getVoterManager();
 
-        List<OfflinePlayer> topVoters = voterManager.getTop10Voters();
+        List<OfflinePlayer> topVoters = voterManager.getCurrentMonthTop10Voters();
 
         Component leaderboard = getMessageAsComponent("PrefixLine");
 

@@ -1,14 +1,15 @@
 package com.zerek.feathervote.managers;
 
 import com.zerek.feathervote.FeatherVote;
-import com.zerek.feathervote.data.Voter;
+import com.zerek.feathervote.data.Vote;
+import com.zerek.feathervote.utilities.ItemLabelUtility;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +24,10 @@ public class VoterManager {
 
     private List<ItemStack> rewardOptionsMap = new ArrayList<>();
 
+    public String currentYearMonth, previousYearMonth;
+
+    private ItemLabelUtility itemLabelUtility;
+
 
 
     public VoterManager(FeatherVote plugin) {
@@ -30,6 +35,10 @@ public class VoterManager {
         this.plugin = plugin;
 
         this.init();
+
+        this.currentYearMonth = plugin.getCurrentYearMonth();
+
+        this.previousYearMonth = plugin.getPreviousYearMonth();
     }
 
 
@@ -38,12 +47,15 @@ public class VoterManager {
         this.rewardOptionsMap = plugin.getConfigManager().getRewardOptionsMap();
 
         this.messagesManager = plugin.getMessagesManager();
+
+        this.itemLabelUtility = plugin.getItemLabelUtility();
+
     }
 
 
-    private boolean isVoter(OfflinePlayer offlinePlayer){
+    private boolean isVoter(OfflinePlayer offlinePlayer, String yearMonth){
 
-        return Voter.exists(offlinePlayer.getUniqueId().toString());
+        return Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),yearMonth).exists();
     }
 
 
@@ -51,220 +63,161 @@ public class VoterManager {
 
         String uuid = offlinePlayer.getUniqueId().toString();
 
-        if (!isVoter(offlinePlayer)) new Voter().set("mojang_uuid", uuid , "updated_at", System.currentTimeMillis()).insert();
+        if (!isVoter(offlinePlayer, currentYearMonth)) new Vote().set("mojang_uuid", uuid , "year_month", currentYearMonth).insert();
 
-        Voter voter = Voter.findById(uuid);
+        Vote vote = Vote.findByCompositeKeys(uuid,currentYearMonth);
 
-        voter.set(
-                "updated_at", System.currentTimeMillis(),
-                "vote_count_total", voter.getInteger("vote_count_total") + 1,
-                "vote_count_current_month", voter.getInteger("vote_count_current_month") + 1 )
+        vote.set(
+                "votes", vote.getInteger("votes") + 1,
+                "rewards_owed", vote.getInteger("rewards_owed") + 1 )
                 .saveIt();
 
-        this.addRewardOwedCount(offlinePlayer);
 
-        if (voter.getInteger("vote_count_current_month") == 64) this.addSpecialRewardOwedCount(offlinePlayer);
+        if (vote.getInteger("votes") == 64) vote.setBoolean("special_reward_owed", 1).saveIt();
 
-        if (offlinePlayer.isOnline()) {
+        // if they are online reward them, regular and special if applicable. (should just be the 1 vote just processed)
+        if (offlinePlayer.isOnline()) this.rewardPlayer((Player) offlinePlayer, currentYearMonth,true);
 
-            if (voter.getInteger("rewards_owed") > 0) {
+        // if they are offline, announce the vote, regular and special if applicable.
+        else this.offlineAnnounceVote(offlinePlayer, currentYearMonth);
+    }
+
+
+    public void rewardPlayer(Player player, String yearMonth, boolean broadcast) {
+
+        if (isVoter(player,yearMonth)){
+
+            Vote vote = Vote.findByCompositeKeys(player.getUniqueId().toString(),yearMonth);
+
+            while (vote.getInteger("rewards_owed") > 0) {
 
                 ItemStack reward = this.generateReward();
 
-                this.rewardPlayer((Player) offlinePlayer, reward);
+                player.getInventory().addItem(reward).forEach((index, itemStack) -> {
 
-                this.announceVote((Player) offlinePlayer, reward);
+                    player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId());
+
+                    vote.setInteger("rewards_owed", vote.getInteger("rewards_owed") - 1).saveIt();
+                });
+
+                ItemStack formattedReward = itemLabelUtility.formatItemStack(reward.clone());
+
+                if (broadcast) {
+
+                    plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OnlineAnnounce"),
+                            Placeholder.unparsed("player",player.getName()),
+                            Placeholder.component("reward",formattedReward.displayName().hoverEvent(formattedReward)),
+                            Placeholder.unparsed("votes", String.valueOf(vote.getInteger("votes")))));
+                }
             }
 
-            if (voter.getInteger("special_rewards_owed") > 0) {
+            if (vote.getBoolean("special_reward_owed")) {
 
-                ItemStack specialReward = this.generateSpecialReward();
+                ItemStack specialReward = this.generateSpecialReward(player, yearMonth);
 
-                this.specialRewardPlayer((Player) offlinePlayer, specialReward);
+                player.getInventory().addItem(specialReward).forEach((index, itemStack) -> {
 
-                this.announceSpecialVote((Player) offlinePlayer, specialReward);
+                    player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId());
 
+                    vote.setBoolean("special_reward_owed", false);
+                });
+
+                ItemStack formattedSpecialReward = itemLabelUtility.formatItemStack(specialReward.clone());
+
+                if (broadcast) {
+
+                    plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OnlineSpecialAnnounce"),
+                            Placeholder.unparsed("player", player.getName()),
+                            Placeholder.component("reward", formattedSpecialReward.displayName().hoverEvent(formattedSpecialReward))));
+                }
             }
         }
+    }
 
-        else {
 
-            if (voter.getInteger("rewards_owed") > 0) this.announceVote(offlinePlayer);
+    public void offlineAnnounceVote(OfflinePlayer offlinePlayer, String yearMonth) {
 
-            if (voter.getInteger("special_rewards_owed") > 0) this.announceSpecialVote(offlinePlayer);
+        Vote vote = Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),yearMonth);
+
+        plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OfflineAnnounce"),
+                Placeholder.unparsed("player",offlinePlayer.getName()),
+                Placeholder.unparsed("votes", String.valueOf(vote.getInteger("votes")))));
+
+        if (vote.getBoolean("special_reward_owed")) {
+
+            plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OfflineSpecialAnnounce"),
+                    Placeholder.unparsed("player",offlinePlayer.getName())));
         }
-
     }
 
 
     public ItemStack generateReward() {
+
         return rewardOptionsMap.get(rand.nextInt(rewardOptionsMap.size()));
     }
 
 
-    public ItemStack generateSpecialReward() {
-        return new ItemStack(Material.PAPER, 1);
+    public ItemStack generateSpecialReward(Player player, String yearMonth) {
+
+        ItemStack specialReward = new ItemStack(Material.PAPER, 1);
+
+        ItemMeta itemMeta = specialReward.getItemMeta();
+
+        itemMeta.setUnbreakable(true);
+
+        itemMeta.displayName(MiniMessage.miniMessage().deserialize("<red><username> <date> ballot",
+                Placeholder.unparsed("username", player.getName()),
+                Placeholder.unparsed("date", yearMonth)));
+
+        specialReward.lore(Collections.singletonList(MiniMessage.miniMessage().deserialize(
+                "&4Official: ░<username>░<br><br>/tip vote<br>Rewarded to players<br>who vote 64 times<br>in a month.",
+                Placeholder.unparsed("username", player.getName()))));
+
+        specialReward.setItemMeta(itemMeta);
+
+        return specialReward;
     }
 
 
-
-    public void rewardPlayer(Player player, ItemStack reward) {
-
-        player.getInventory().addItem(reward).forEach((index, itemStack) -> {
-
-            Item item = player.getWorld().dropItem(player.getLocation(), itemStack);
-
-            item.setOwner(player.getUniqueId());
-
-            this.removeRewardOwedCount(player);
-        });
+    public void informOfflineVotes(Player player) {
+        player.sendMessage(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("LoginVoteNotice")));
     }
 
 
-    public void specialRewardPlayer(Player player, ItemStack specialReward) {
+    public List<OfflinePlayer> getCurrentMonthTop10Voters() {
 
-        player.getInventory().addItem(specialReward).forEach((index, itemStack) -> {
-
-            Item item = player.getWorld().dropItem(player.getLocation(), itemStack);
-
-            item.setOwner(player.getUniqueId());
-
-            this.removeSpecialRewardOwedCount(player);
-        });
+        return Vote.where("year_month = ?", currentYearMonth).orderBy("votes desc").limit(10).stream().map(vote -> plugin.getServer().getOfflinePlayer(vote.getString("mojang_uuid"))).collect(Collectors.toList());
     }
 
 
-    private void announceVote(Player player, ItemStack reward) {
+    public boolean isRewardsOwed(OfflinePlayer offlinePlayer, String yearMonth) {
 
-        plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OnlineAnnounce"),
-                Placeholder.unparsed("player",player.getName()),
-                Placeholder.unparsed("reward", reward.getAmount() + " " + reward.getType().name().replace("_", " ").toLowerCase() + "s"),
-                Placeholder.unparsed("votes", String.valueOf(plugin.getVoterManager().getCurrentMonthVoteCount(player)))));
-    }
+        if (isVoter(offlinePlayer,yearMonth)) {
 
+            Vote vote = Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),yearMonth);
 
-    public void announceVote(OfflinePlayer offlinePlayer) {
+            return vote.getInteger("rewards_owed") > 0 || vote.getBoolean("special_reward_owed");
+        }
 
-        plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OfflineAnnounce"),
-                Placeholder.unparsed("player",offlinePlayer.getName()),
-                Placeholder.unparsed("votes", String.valueOf(plugin.getVoterManager().getCurrentMonthVoteCount(offlinePlayer)))));
-    }
-
-
-    private void announceSpecialVote(Player player, ItemStack reward) {
-
-        plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OnlineSpecialAnnounce"),
-                Placeholder.unparsed("player",player.getName()),
-                Placeholder.unparsed("reward", reward.getAmount() + " " + reward.getType().name().replace("_", " ").toLowerCase() + "s"),
-                Placeholder.unparsed("votes", String.valueOf(plugin.getVoterManager().getCurrentMonthVoteCount(player)))));
-    }
-
-
-    public void announceSpecialVote(OfflinePlayer offlinePlayer) {
-
-        plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OfflineSpecialAnnounce"),
-                Placeholder.unparsed("player",offlinePlayer.getName()),
-                Placeholder.unparsed("votes", String.valueOf(plugin.getVoterManager().getCurrentMonthVoteCount(offlinePlayer)))));
-    }
-
-
-    public void informOfflineVotes(Player player, int rewardCount) {
-        player.sendMessage(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("LoginVoteNotice"),
-                Placeholder.unparsed("votes", String.valueOf(rewardCount))));
-    }
-
-
-    public void newMonthReset() {
-        Voter.findAll().forEach(voter -> {
-            voter.setInteger("vote_count_previous_month", voter.getInteger("vote_count_current_month"));
-            voter.setInteger("vote_count_current_month", 0);
-        });
-    }
-
-
-    public List<OfflinePlayer> getTop10Voters() {
-
-        return Voter.findAll().orderBy("vote_count_current_month desc").limit(10).stream().map(voter -> plugin.getServer().getOfflinePlayer(voter.getString("mojang_uuid"))).collect(Collectors.toList());
-    }
-
-
-    private void addRewardOwedCount(OfflinePlayer offlinePlayer) {
-
-        Voter voter = Voter.findById(offlinePlayer.getUniqueId().toString());
-
-        voter.set("rewards_owed", voter.getInteger("rewards_owed") + 1);
-
-        voter.saveIt();
-    }
-
-
-    private void addSpecialRewardOwedCount(OfflinePlayer offlinePlayer) {
-
-        Voter voter = Voter.findById(offlinePlayer.getUniqueId().toString());
-
-        voter.set("special_rewards_owed", voter.getInteger("special_rewards_owed") + 1);
-
-        voter.saveIt();
-    }
-
-
-    private void removeRewardOwedCount(OfflinePlayer offlinePlayer) {
-
-        Voter voter = Voter.findById(offlinePlayer.getUniqueId().toString());
-
-        voter.set("rewards_owed", voter.getInteger("rewards_owed") - 1);
-
-        voter.saveIt();
-    }
-
-
-    private void removeSpecialRewardOwedCount(OfflinePlayer offlinePlayer) {
-
-        Voter voter = Voter.findById(offlinePlayer.getUniqueId().toString());
-
-        voter.set("special_rewards_owed", voter.getInteger("special_rewards_owed") - 1);
-
-        voter.saveIt();
-    }
-
-
-    public int getRewardsOwedCount(OfflinePlayer offlinePlayer) {
-
-        if (isVoter(offlinePlayer)) return Voter.findById(offlinePlayer.getUniqueId().toString()).getInteger("rewards_owed");
-
-        else return 0;
-    }
-
-
-    public int getSpecialRewardsOwedCount(OfflinePlayer offlinePlayer) {
-
-        if (isVoter(offlinePlayer)) return Voter.findById(offlinePlayer.getUniqueId().toString()).getInteger("special_rewards_owed");
-
-        else return 0;
+        else return false;
     }
 
 
     public int getCurrentMonthVoteCount(OfflinePlayer offlinePlayer) {
 
-        if (isVoter(offlinePlayer)) return Voter.findById(offlinePlayer.getUniqueId().toString()).getInteger("vote_count_current_month");
-
-        else return 0;
+        return Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),currentYearMonth).getInteger("votes");
     }
 
 
     public int getPreviousMonthVoteCount(OfflinePlayer offlinePlayer) {
 
-        if (isVoter(offlinePlayer)) return Voter.findById(offlinePlayer.getUniqueId().toString()).getInteger("vote_count_previous_month");
-
-        else return 0;
+        return Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),previousYearMonth).getInteger("votes");
     }
 
 
     public int getTotalVoteCount(OfflinePlayer offlinePlayer) {
 
-        if (isVoter(offlinePlayer)) return Voter.findById(offlinePlayer.getUniqueId().toString()).getInteger("vote_count_total");
-
-        else return 0;
+        return Vote.where("mojang_uuid = ?", offlinePlayer.getUniqueId().toString()).stream().mapToInt(vote -> vote.getInteger("votes")).sum();
     }
 }
 

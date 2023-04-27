@@ -2,6 +2,7 @@ package com.zerek.feathervote.listeners;
 
 import com.zerek.feathervote.FeatherVote;
 import com.zerek.feathervote.managers.VoterManager;
+import com.zerek.feathervote.tasks.VoteRewardLoginTask;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -27,15 +28,7 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
 
-        int offlineVotes = 0;
+        new VoteRewardLoginTask(plugin, event.getPlayer()).runTaskAsynchronously(plugin);
 
-        while (voterManager.getRewardsOwedCount(event.getPlayer()) > 0) {
-
-            offlineVotes = voterManager.getRewardsOwedCount(event.getPlayer());
-
-            voterManager.rewardPlayer(event.getPlayer(),voterManager.generateReward());
-        }
-
-        if (offlineVotes > 0) voterManager.informOfflineVotes(event.getPlayer(), offlineVotes);
     }
 }

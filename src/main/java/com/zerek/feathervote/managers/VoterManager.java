@@ -3,10 +3,12 @@ package com.zerek.feathervote.managers;
 import com.zerek.feathervote.FeatherVote;
 import com.zerek.feathervote.data.Vote;
 import com.zerek.feathervote.utilities.ItemLabelUtility;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,26 +38,26 @@ public class VoterManager {
 
         this.init();
 
-        this.currentYearMonth = plugin.getCurrentYearMonth();
+        this.currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
 
-        this.previousYearMonth = plugin.getPreviousYearMonth();
+        this.previousYearMonth = plugin.getYearMonthUtility().getPreviousYearMonth(1);
     }
 
 
     private void init() {
 
+        this.itemLabelUtility = plugin.getItemLabelUtility();
+
         this.rewardOptionsMap = plugin.getConfigManager().getRewardOptionsMap();
 
         this.messagesManager = plugin.getMessagesManager();
 
-        this.itemLabelUtility = plugin.getItemLabelUtility();
-
     }
 
 
-    private boolean isVoter(OfflinePlayer offlinePlayer, String yearMonth){
+    private boolean isVoter(String uuid, String yearMonth){
 
-        return Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),yearMonth).exists();
+        return Vote.findByCompositeKeys(uuid, yearMonth) != null;
     }
 
 
@@ -63,7 +65,7 @@ public class VoterManager {
 
         String uuid = offlinePlayer.getUniqueId().toString();
 
-        if (!isVoter(offlinePlayer, currentYearMonth)) new Vote().set("mojang_uuid", uuid , "year_month", currentYearMonth).insert();
+        if (!isVoter(offlinePlayer.getUniqueId().toString(), currentYearMonth)) new Vote().set("mojang_uuid", uuid , "year_month", currentYearMonth).insert();
 
         Vote vote = Vote.findByCompositeKeys(uuid,currentYearMonth);
 
@@ -85,24 +87,21 @@ public class VoterManager {
 
     public void rewardPlayer(Player player, String yearMonth, boolean broadcast) {
 
-        if (isVoter(player,yearMonth)){
+        if (isVoter(player.getUniqueId().toString(),yearMonth)){
 
             Vote vote = Vote.findByCompositeKeys(player.getUniqueId().toString(),yearMonth);
 
             while (vote.getInteger("rewards_owed") > 0) {
 
+                vote.setInteger("rewards_owed", vote.getInteger("rewards_owed") - 1).saveIt();
+
                 ItemStack reward = this.generateReward();
 
-                player.getInventory().addItem(reward).forEach((index, itemStack) -> {
-
-                    player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId());
-
-                    vote.setInteger("rewards_owed", vote.getInteger("rewards_owed") - 1).saveIt();
-                });
-
-                ItemStack formattedReward = itemLabelUtility.formatItemStack(reward.clone());
+                player.getInventory().addItem(reward).forEach((integer, itemStack) -> player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId()));
 
                 if (broadcast) {
+
+                    ItemStack formattedReward = itemLabelUtility.formatItemStack(reward.clone());
 
                     plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OnlineAnnounce"),
                             Placeholder.unparsed("player",player.getName()),
@@ -113,13 +112,14 @@ public class VoterManager {
 
             if (vote.getBoolean("special_reward_owed")) {
 
+                vote.setBoolean("special_reward_owed", false).saveIt();
+
                 ItemStack specialReward = this.generateSpecialReward(player, yearMonth);
 
                 player.getInventory().addItem(specialReward).forEach((index, itemStack) -> {
 
                     player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId());
 
-                    vote.setBoolean("special_reward_owed", false);
                 });
 
                 ItemStack formattedSpecialReward = itemLabelUtility.formatItemStack(specialReward.clone());
@@ -163,15 +163,24 @@ public class VoterManager {
 
         ItemMeta itemMeta = specialReward.getItemMeta();
 
+        itemMeta.addEnchant(Enchantment.DURABILITY,10,true);
+
         itemMeta.setUnbreakable(true);
 
         itemMeta.displayName(MiniMessage.miniMessage().deserialize("<red><username> <date> ballot",
                 Placeholder.unparsed("username", player.getName()),
                 Placeholder.unparsed("date", yearMonth)));
 
-        specialReward.lore(Collections.singletonList(MiniMessage.miniMessage().deserialize(
-                "&4Official: ░<username>░<br><br>/tip vote<br>Rewarded to players<br>who vote 64 times<br>in a month.",
-                Placeholder.unparsed("username", player.getName()))));
+        List<Component> lore = new ArrayList<>();
+
+        lore.add(MiniMessage.miniMessage().deserialize("<dark_red>Official: ░<username>░",Placeholder.unparsed("username", player.getName())));
+        lore.add(Component.text(" "));
+        lore.add(MiniMessage.miniMessage().deserialize("<gray>/tip vote"));
+        lore.add(MiniMessage.miniMessage().deserialize("<gray>Rewarded to players"));
+        lore.add(MiniMessage.miniMessage().deserialize("<gray>who vote 64 times"));
+        lore.add(MiniMessage.miniMessage().deserialize("<gray>in a month."));
+
+        itemMeta.lore(lore);
 
         specialReward.setItemMeta(itemMeta);
 
@@ -179,45 +188,49 @@ public class VoterManager {
     }
 
 
-    public void informOfflineVotes(Player player) {
-        player.sendMessage(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("LoginVoteNotice")));
+    public void informOfflineRewards(Player player) {
+        player.sendMessage(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("LoginRewardNotice")));
     }
 
 
-    public List<OfflinePlayer> getCurrentMonthTop10Voters() {
+    public List<String> getCurrentMonthTop10Voters() {
 
-        return Vote.where("year_month = ?", currentYearMonth).orderBy("votes desc").limit(10).stream().map(vote -> plugin.getServer().getOfflinePlayer(vote.getString("mojang_uuid"))).collect(Collectors.toList());
+        return Vote.where("year_month = ?", currentYearMonth)
+                .orderBy("votes desc")
+                .limit(10)
+                .stream()
+                .map(vote -> vote.getString("mojang_uuid"))
+                .collect(Collectors.toList());
     }
 
 
-    public boolean isRewardsOwed(OfflinePlayer offlinePlayer, String yearMonth) {
+    public boolean isRewardOwed(OfflinePlayer offlinePlayer) {
 
-        if (isVoter(offlinePlayer,yearMonth)) {
-
-            Vote vote = Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),yearMonth);
-
-            return vote.getInteger("rewards_owed") > 0 || vote.getBoolean("special_reward_owed");
-        }
-
-        else return false;
+        return Vote.where("mojang_uuid = ?", offlinePlayer.getUniqueId().toString())
+                .stream()
+                .anyMatch(vote -> vote.getInteger("rewards_owed") > 0);
     }
 
 
-    public int getCurrentMonthVoteCount(OfflinePlayer offlinePlayer) {
+    public List<String> getRewardOwingMonths(OfflinePlayer offlinePlayer) {
+        return Vote.where("mojang_uuid = ?", offlinePlayer.getUniqueId().toString())
+                .stream()
+                .filter(vote -> vote.getInteger("votes") > 0)
+                .map(vote -> vote.getString("year_month"))
+                .collect(Collectors.toList());
 
-        return Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),currentYearMonth).getInteger("votes");
     }
 
 
-    public int getPreviousMonthVoteCount(OfflinePlayer offlinePlayer) {
+    public int getMonthVoteCount(String uuid, String yearMonth) {
 
-        return Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),previousYearMonth).getInteger("votes");
+        return isVoter(uuid, yearMonth) ? Vote.findByCompositeKeys(uuid, yearMonth).getInteger("votes") : 0;
     }
 
 
-    public int getTotalVoteCount(OfflinePlayer offlinePlayer) {
+    public int getTotalVoteCount(String uuid) {
 
-        return Vote.where("mojang_uuid = ?", offlinePlayer.getUniqueId().toString()).stream().mapToInt(vote -> vote.getInteger("votes")).sum();
+        return Vote.where("mojang_uuid = ?", uuid).stream().mapToInt(vote -> vote.getInteger("votes")).sum();
     }
 }
 

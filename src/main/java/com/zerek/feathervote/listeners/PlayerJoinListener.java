@@ -2,7 +2,7 @@ package com.zerek.feathervote.listeners;
 
 import com.zerek.feathervote.FeatherVote;
 import com.zerek.feathervote.managers.VoterManager;
-import com.zerek.feathervote.tasks.VoteRewardLoginTask;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -12,6 +12,8 @@ public class PlayerJoinListener implements Listener {
     private final FeatherVote plugin;
 
     private VoterManager voterManager;
+
+    private String currentYearMonth;
 
     public PlayerJoinListener(FeatherVote plugin) {
 
@@ -23,12 +25,21 @@ public class PlayerJoinListener implements Listener {
     private void init() {
 
         this.voterManager = this.plugin.getVoterManager();
+
+        this.currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
+
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
 
-        new VoteRewardLoginTask(plugin, event.getPlayer()).runTaskAsynchronously(plugin);
+        Player player = event.getPlayer();
 
+        if (voterManager.isRewardOwed(player)) {
+
+            voterManager.getRewardOwingMonths(player).forEach(yearMonth -> voterManager.rewardPlayer(event.getPlayer(), yearMonth, false));
+
+            voterManager.informOfflineRewards(player);
+        }
     }
 }

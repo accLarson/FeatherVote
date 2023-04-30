@@ -13,10 +13,31 @@ public class VoteTabCompleter implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-        List<String> options = new ArrayList<>();
+        switch (args.length) {
 
-        options.add("leaderboard");
+            case 1:
 
-        return options;
+                List<String> options = new ArrayList<>();
+
+                if (sender.hasPermission("feather.vote.leaderboard")) options.add("leaderboard");
+
+                if (sender.hasPermission("feather.vote.history")) options.add("history");
+
+                List<String> match = new ArrayList<>();
+
+                for (String option : options) if (option.toLowerCase().startsWith(args[0].toLowerCase())) match.add(option);
+
+                return match;
+
+            case 2:
+
+                if (args[0].equalsIgnoreCase("history")) return null;
+
+                else return new ArrayList<>();
+
+            default:
+
+                return new ArrayList<>();
+        }
     }
 }

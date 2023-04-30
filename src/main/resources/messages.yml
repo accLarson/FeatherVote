@@ -4,19 +4,21 @@ SuffixLine: "<#ffffff>•<#7777777>---------------------------------------------
 OnlineAnnounce: "<white>• <#949bd1><player> <#656b96>voted | <#656b96>reward: <#949bd1><reward> <#656b96>| <#949bd1><votes> <#656b96>votes this month!"
 OfflineAnnounce: "<white>• <#949bd1><player> <#656b96>voted | <#656b96>reward given on next login <#656b96>| <#949bd1><votes> <#656b96>votes this month!"
 
-OnlineSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>voted 64 times | <#656b96>special reward: <#949bd1><reward>"
-OfflineSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>voted 64 times | <#656b96>special reward given on next login. "
+OnlineSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>64th vote | <#656b96>special reward: <#949bd1><reward>"
+OfflineSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>64th vote | <#656b96>special reward given on next login."
 
-LoginVoteNotice: "<white>• <#656b96>You've received vote rewards for voting while offline. Thank you!"
+LoginRewardNotice: "<white>• <#656b96>You've received vote rewards for voting while offline!"
 
-LeaderboardHeader: "<#656b96><voter><#656b96><month_votes><#656b96><previous_votes><#656b96><total_votes>"
-LeaderboardEntry: "<#949bd1><voter><#949bd1><month_votes><#949bd1><previous_votes><#949bd1><total_votes>"
+Header: "<#656b96><voter><#656b96><month_votes><dark_gray><previous_votes_1><dark_gray><previous_votes_2><dark_gray><previous_votes_3><#656b96><total_votes>"
+Entry: "<#949bd1><voter><#949bd1><month_votes><gray><previous_votes_1><gray><previous_votes_2><gray><previous_votes_3><#949bd1><total_votes>"
 
-VoteSites: "<#656b96>Vote on 4 websites daily for 64 logs each. (total 4 stacks - 256 logs):
-            <br><#949bd1><hover:show_text:'Click to Voter'><click:open_url:https://www.planetminecraft.com/server/straight-up-survival-no-protection-smp-4081761/vote>planetminecraft.com</click></hover>
-            <br><#949bd1><hover:show_text:'Click to Voter'><click:open_url:https://minecraft-server-list.com/server/421677/vote>minecraft-server-list.com</click></hover>
-            <br><#949bd1><hover:show_text:'Click to Voter'><click:open_url:https://minecraft-server.net/vote/SUSMinecraft>minecraft-server.net</click></hover>
-            <br><#949bd1><hover:show_text:'Click to Voter'><click:open_url:https://minecraft-mp.com/server/276921/vote>minecraft-mp.com</click></hover>
-            <br><gray><italic>vote 64 times in a month for a lored item!"
+VoteSites: "<#656b96>Vote on 4 sites daily for 64 logs each. (total 4 stacks):
+            <br><#949bd1><hover:show_text:'Click to Vote'><click:open_url:'https://www.planetminecraft.com/server/straight-up-survival-no-protection-smp-4081761/vote/?username=<username>'>planetminecraft.com</click></hover>
+            <br><#949bd1><hover:show_text:'Click to Vote'><click:open_url:'https://minecraft-server-list.com/server/421677/vote/?playername=<username>'>minecraft-server-list.com</click></hover>
+            <br><#949bd1><hover:show_text:'Click to Vote'><click:open_url:'https://minecraft-server.net/vote/SUSMinecraft'>minecraft-server.net</click></hover>
+            <br><#949bd1><hover:show_text:'Click to Vote'><click:open_url:'https://minecraft-mp.com/server/276921/vote/?username=<username>'>minecraft-mp.com</click></hover>
+            <br><gray><italic>vote 64 times in a month for a lored ballot!"
 
-ErrorInvalid: "<#E4453A>You have entered an invalid command."
+ErrorInvalid: "<#6C719D>Error: You have entered an invalid command."
+ErrorUnresolvedPlayer: "<#6C719D>Error: Unable to resolve requested username."
+ErrorNoPermission: "<#6C719D>Error: You do not have permission to use this command."

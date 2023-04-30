@@ -90,4 +90,9 @@ public class DatabaseManager {
             }
         }
     }
+
+    public static Connection getConnection() {
+
+        return connection;
+    }
 }

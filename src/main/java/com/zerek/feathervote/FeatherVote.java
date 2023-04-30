@@ -2,6 +2,7 @@ package com.zerek.feathervote;
 
 import com.zerek.feathervote.commands.VoteCommand;
 import com.zerek.feathervote.commands.VoteTabCompleter;
+import com.zerek.feathervote.listeners.PlayerJoinListener;
 import com.zerek.feathervote.listeners.VotifierListener;
 import com.zerek.feathervote.managers.ConfigManager;
 import com.zerek.feathervote.managers.DatabaseManager;
@@ -9,10 +10,10 @@ import com.zerek.feathervote.managers.MessagesManager;
 import com.zerek.feathervote.managers.VoterManager;
 import com.zerek.feathervote.utilities.ChatUtility;
 import com.zerek.feathervote.utilities.ItemLabelUtility;
+import com.zerek.feathervote.utilities.YearMonthUtility;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDate;
-import java.time.Year;
 
 public final class FeatherVote extends JavaPlugin {
 
@@ -20,33 +21,35 @@ public final class FeatherVote extends JavaPlugin {
 
     private MessagesManager messagesManager;
 
-    private DatabaseManager databaseManager;
-
     private VoterManager voterManager;
+
+    private DatabaseManager databaseManager;
 
     private ChatUtility chatUtility;
 
     private ItemLabelUtility itemLabelUtility;
 
-    private final String currentYearMonth = LocalDate.now().getYear() + "/" + LocalDate.now().getMonthValue();
+    private YearMonthUtility yearMonthUtility;
 
-    private String previousYearMonth;
+
 
 
     @Override
     public void onEnable() {
 
+        this.chatUtility = new ChatUtility(this);
+
+        this.itemLabelUtility = new ItemLabelUtility(this);
+
+        this.yearMonthUtility = new YearMonthUtility(this);
+
         this.configManager = new ConfigManager(this);
 
         this.messagesManager = new MessagesManager(this);
 
-        this.databaseManager = new DatabaseManager(this);
-
         this.voterManager = new VoterManager(this);
 
-        this.chatUtility = new ChatUtility(this);
-
-        this.itemLabelUtility = new ItemLabelUtility(this);
+        this.databaseManager = new DatabaseManager(this);
 
         this.getCommand("vote").setExecutor(new VoteCommand(this));
 
@@ -54,17 +57,13 @@ public final class FeatherVote extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new VotifierListener(this),this);
 
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-
-        if (month == 1) year = year - 1;
-
-        previousYearMonth = year + "/" + LocalDate.now().getMonth().minus(1).getValue();
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this),this);
     }
 
     @Override
     public void onDisable() {
     }
+
     public ConfigManager getConfigManager() {
         return configManager;
     }
@@ -73,12 +72,12 @@ public final class FeatherVote extends JavaPlugin {
         return messagesManager;
     }
 
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
-    }
-
     public VoterManager getVoterManager() {
         return voterManager;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
     public ChatUtility getChatUtility() {
@@ -89,11 +88,7 @@ public final class FeatherVote extends JavaPlugin {
         return itemLabelUtility;
     }
 
-    public String getCurrentYearMonth() {
-        return currentYearMonth;
-    }
-
-    public String getPreviousYearMonth() {
-        return previousYearMonth;
+    public YearMonthUtility getYearMonthUtility() {
+        return yearMonthUtility;
     }
 }

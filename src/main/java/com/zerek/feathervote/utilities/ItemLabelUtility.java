@@ -1,7 +1,6 @@
 package com.zerek.feathervote.utilities;
 
 import com.zerek.feathervote.FeatherVote;
-import com.zerek.feathervote.FeatherVote;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,6 +13,7 @@ public class ItemLabelUtility {
     private final FeatherVote plugin;
 
     public ItemLabelUtility(FeatherVote plugin) {
+
         this.plugin = plugin;
     }
 

@@ -1,6 +1,8 @@
 package com.zerek.feathervote.commands;
 
 import com.zerek.feathervote.FeatherVote;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,7 +22,23 @@ public class VoteCommand implements CommandExecutor {
 
         if (args.length == 0) plugin.getMessagesManager().displayVoteSites(sender);
 
-        else if (args.length == 1 && args[0].equalsIgnoreCase("leaderboard")) plugin.getMessagesManager().displayTopVoters(sender);
+        else if (args.length == 1 && args[0].equalsIgnoreCase("leaderboard"))
+
+            if (sender.hasPermission("feather.vote.leaderboard")) plugin.getMessagesManager().displayTopVoters(sender);
+
+            else sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorNoPermission"));
+
+        else if (args.length == 2 && args[0].equalsIgnoreCase("history")) {
+
+            if (sender.hasPermission("feather.vote.history")) {
+
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
+
+                if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) plugin.getMessagesManager().displayVoterHistory(sender, offlinePlayer.getUniqueId().toString());
+
+                else sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorUnresolvedPlayer"));
+            }
+        }
 
         else sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorInvalid"));
 

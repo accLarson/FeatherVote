@@ -35,11 +35,11 @@ public class PlayerJoinListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if (voterManager.isRewardOwed(player)) {
+        if (voterManager.isRewardOwed(player) && !player.hasPermission("feather.vote.postponereward")) {
 
             voterManager.getRewardOwingMonths(player).forEach(yearMonth -> voterManager.rewardPlayer(event.getPlayer(), yearMonth, false));
 
-            voterManager.informOfflineRewards(player);
+            voterManager.informPostponeRewards(player);
         }
     }
 }

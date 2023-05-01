@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -27,6 +28,14 @@ public class VoteCommand implements CommandExecutor {
             if (sender.hasPermission("feather.vote.leaderboard")) plugin.getMessagesManager().displayTopVoters(sender);
 
             else sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorNoPermission"));
+
+        else if (args.length == 1 && args[0].equalsIgnoreCase("history")) {
+
+            if (sender instanceof Player && sender.hasPermission("feather.vote.history")) plugin.getMessagesManager().displayVoterHistory(sender, ((Player) sender).getUniqueId().toString());
+
+            else sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorNoPermission"));
+
+        }
 
         else if (args.length == 2 && args[0].equalsIgnoreCase("history")) {
 

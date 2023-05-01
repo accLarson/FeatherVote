@@ -77,11 +77,9 @@ public class VoterManager {
 
         if (vote.getInteger("votes") == 64) vote.setBoolean("special_reward_owed", 1).saveIt();
 
-        // if they are online reward them, regular and special if applicable. (should just be the 1 vote just processed)
-        if (offlinePlayer.isOnline()) this.rewardPlayer((Player) offlinePlayer, currentYearMonth,true);
+        if (offlinePlayer.isOnline() && !((Player)offlinePlayer).hasPermission("feather.vote.postponereward")) this.rewardPlayer((Player) offlinePlayer, currentYearMonth,true);
 
-        // if they are offline, announce the vote, regular and special if applicable.
-        else this.offlineAnnounceVote(offlinePlayer, currentYearMonth);
+        else this.postponeAnnounceVote(offlinePlayer, currentYearMonth);
     }
 
 
@@ -91,24 +89,28 @@ public class VoterManager {
 
             Vote vote = Vote.findByCompositeKeys(player.getUniqueId().toString(),yearMonth);
 
-            while (vote.getInteger("rewards_owed") > 0) {
+            int rewardCount = vote.getInteger("rewards_owed");
 
-                vote.setInteger("rewards_owed", vote.getInteger("rewards_owed") - 1).saveIt();
+            while (rewardCount > 0) {
 
                 ItemStack reward = this.generateReward();
 
                 player.getInventory().addItem(reward).forEach((integer, itemStack) -> player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId()));
 
-                if (broadcast) {
+                if (broadcast && rewardCount == 1) {
 
                     ItemStack formattedReward = itemLabelUtility.formatItemStack(reward.clone());
 
-                    plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OnlineAnnounce"),
+                    plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("Announce"),
                             Placeholder.unparsed("player",player.getName()),
                             Placeholder.component("reward",formattedReward.displayName().hoverEvent(formattedReward)),
                             Placeholder.unparsed("votes", String.valueOf(vote.getInteger("votes")))));
                 }
+
+                rewardCount--;
             }
+
+            vote.setInteger("rewards_owed", 0).saveIt();
 
             if (vote.getBoolean("special_reward_owed")) {
 
@@ -116,17 +118,13 @@ public class VoterManager {
 
                 ItemStack specialReward = this.generateSpecialReward(player, yearMonth);
 
-                player.getInventory().addItem(specialReward).forEach((index, itemStack) -> {
-
-                    player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId());
-
-                });
+                player.getInventory().addItem(specialReward).forEach((index, itemStack) -> player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId()));
 
                 ItemStack formattedSpecialReward = itemLabelUtility.formatItemStack(specialReward.clone());
 
                 if (broadcast) {
 
-                    plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OnlineSpecialAnnounce"),
+                    plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("SpecialAnnounce"),
                             Placeholder.unparsed("player", player.getName()),
                             Placeholder.component("reward", formattedSpecialReward.displayName().hoverEvent(formattedSpecialReward))));
                 }
@@ -135,17 +133,17 @@ public class VoterManager {
     }
 
 
-    public void offlineAnnounceVote(OfflinePlayer offlinePlayer, String yearMonth) {
+    public void postponeAnnounceVote(OfflinePlayer offlinePlayer, String yearMonth) {
 
         Vote vote = Vote.findByCompositeKeys(offlinePlayer.getUniqueId().toString(),yearMonth);
 
-        plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OfflineAnnounce"),
+        plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("PostponeAnnounce"),
                 Placeholder.unparsed("player",offlinePlayer.getName()),
                 Placeholder.unparsed("votes", String.valueOf(vote.getInteger("votes")))));
 
         if (vote.getBoolean("special_reward_owed")) {
 
-            plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("OfflineSpecialAnnounce"),
+            plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("PostponeSpecialAnnounce"),
                     Placeholder.unparsed("player",offlinePlayer.getName())));
         }
     }
@@ -188,8 +186,8 @@ public class VoterManager {
     }
 
 
-    public void informOfflineRewards(Player player) {
-        player.sendMessage(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("LoginRewardNotice")));
+    public void informPostponeRewards(Player player) {
+        player.sendMessage(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("PostponeRewardNotice")));
     }
 
 
@@ -218,7 +216,6 @@ public class VoterManager {
                 .filter(vote -> vote.getInteger("votes") > 0)
                 .map(vote -> vote.getString("year_month"))
                 .collect(Collectors.toList());
-
     }
 
 

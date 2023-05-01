@@ -1,19 +1,17 @@
-package com.zerek.feathervote;
+package dev.zerek.feathervote;
 
-import com.zerek.feathervote.commands.VoteCommand;
-import com.zerek.feathervote.commands.VoteTabCompleter;
-import com.zerek.feathervote.listeners.PlayerJoinListener;
-import com.zerek.feathervote.listeners.VotifierListener;
-import com.zerek.feathervote.managers.ConfigManager;
-import com.zerek.feathervote.managers.DatabaseManager;
-import com.zerek.feathervote.managers.MessagesManager;
-import com.zerek.feathervote.managers.VoterManager;
-import com.zerek.feathervote.utilities.ChatUtility;
-import com.zerek.feathervote.utilities.ItemLabelUtility;
-import com.zerek.feathervote.utilities.YearMonthUtility;
+import dev.zerek.feathervote.commands.VoteCommand;
+import dev.zerek.feathervote.commands.VoteTabCompleter;
+import dev.zerek.feathervote.listeners.PlayerJoinListener;
+import dev.zerek.feathervote.listeners.VotifierListener;
+import dev.zerek.feathervote.managers.ConfigManager;
+import dev.zerek.feathervote.managers.DatabaseManager;
+import dev.zerek.feathervote.managers.MessagesManager;
+import dev.zerek.feathervote.managers.VoterManager;
+import dev.zerek.feathervote.utilities.ChatUtility;
+import dev.zerek.feathervote.utilities.ItemLabelUtility;
+import dev.zerek.feathervote.utilities.YearMonthUtility;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.time.LocalDate;
 
 public final class FeatherVote extends JavaPlugin {
 

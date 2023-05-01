@@ -1,8 +1,8 @@
-package com.zerek.feathervote.managers;
+package dev.zerek.feathervote.managers;
 
-import com.zerek.feathervote.FeatherVote;
-import com.zerek.feathervote.data.Vote;
-import com.zerek.feathervote.utilities.ItemLabelUtility;
+import dev.zerek.feathervote.FeatherVote;
+import dev.zerek.feathervote.data.Vote;
+import dev.zerek.feathervote.utilities.ItemLabelUtility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;

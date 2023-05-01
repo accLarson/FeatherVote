@@ -1,6 +1,6 @@
-package com.zerek.feathervote.utilities;
+package dev.zerek.feathervote.utilities;
 
-import com.zerek.feathervote.FeatherVote;
+import dev.zerek.feathervote.FeatherVote;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 

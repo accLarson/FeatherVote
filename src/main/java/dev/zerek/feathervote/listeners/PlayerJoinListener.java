@@ -1,7 +1,7 @@
-package com.zerek.feathervote.listeners;
+package dev.zerek.feathervote.listeners;
 
-import com.zerek.feathervote.FeatherVote;
-import com.zerek.feathervote.managers.VoterManager;
+import dev.zerek.feathervote.FeatherVote;
+import dev.zerek.feathervote.managers.VoterManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

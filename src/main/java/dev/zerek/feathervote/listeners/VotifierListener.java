@@ -1,8 +1,8 @@
-package com.zerek.feathervote.listeners;
+package dev.zerek.feathervote.listeners;
 
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
-import com.zerek.feathervote.FeatherVote;
+import dev.zerek.feathervote.FeatherVote;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;

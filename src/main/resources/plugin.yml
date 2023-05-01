@@ -1,6 +1,6 @@
 name: FeatherVote
 version: '${project.version}'
-main: com.zerek.feathervote.FeatherVote
+main: dev.zerek.feathervote.FeatherVote
 api-version: 1.19
 depend: [ Votifier ]
 authors: [ Zerek ]

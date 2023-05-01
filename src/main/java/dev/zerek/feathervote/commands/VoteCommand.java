@@ -1,6 +1,6 @@
-package com.zerek.feathervote.commands;
+package dev.zerek.feathervote.commands;
 
-import com.zerek.feathervote.FeatherVote;
+import dev.zerek.feathervote.FeatherVote;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;

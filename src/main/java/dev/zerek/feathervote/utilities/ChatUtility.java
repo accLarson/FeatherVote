@@ -1,6 +1,6 @@
-package com.zerek.feathervote.utilities;
+package dev.zerek.feathervote.utilities;
 
-import com.zerek.feathervote.FeatherVote;
+import dev.zerek.feathervote.FeatherVote;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -20,7 +20,7 @@ public class ChatUtility {
     private static ChatUtility chatUtility = null;
 
     private final FeatherVote plugin;
-    private final Map<String, Integer> characterWidths = new HashMap<String, Integer>();
+    private final Map<String, Integer> characterWidths = new HashMap<>();
 
     public ChatUtility(FeatherVote plugin) {
         this.plugin = plugin;

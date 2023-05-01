@@ -1,6 +1,6 @@
-package com.zerek.feathervote.managers;
+package dev.zerek.feathervote.managers;
 
-import com.zerek.feathervote.FeatherVote;
+import dev.zerek.feathervote.FeatherVote;
 import org.javalite.activejdbc.Base;
 import java.io.File;
 import java.sql.Connection;

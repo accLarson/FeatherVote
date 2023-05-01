@@ -1,4 +1,4 @@
-package com.zerek.feathervote.data;
+package dev.zerek.feathervote.data;
 
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.CompositePK;

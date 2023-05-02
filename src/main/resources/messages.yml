@@ -7,7 +7,7 @@ PostponeAnnounce: "<white>• <#949bd1><player> <#656b96>voted (<#949bd1><votes>
 SpecialAnnounce: "<white>• <#949bd1><player> 64th vote <#656b96>| special reward: <#949bd1><reward>"
 PostponeSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>64th vote | <#656b96>special reward will be given later."
 
-PostponeRewardNotice: "<white>• <#656b96>You've received rewards for previous votes!"
+PostponeRewardNotice: "<#846d91>You've received rewards for previous votes!"
 
 Header: "<#656b96><voter><#656b96><month_votes><dark_gray><previous_votes_1><dark_gray><previous_votes_2><dark_gray><previous_votes_3><#656b96><total_votes>"
 Entry: "<#949bd1><voter><#949bd1><month_votes><gray><previous_votes_1><gray><previous_votes_2><gray><previous_votes_3><#949bd1><total_votes>"

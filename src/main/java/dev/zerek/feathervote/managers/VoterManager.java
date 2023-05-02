@@ -95,11 +95,11 @@ public class VoterManager {
 
                 ItemStack reward = this.generateReward();
 
+                ItemStack formattedReward = itemLabelUtility.formatItemStack(reward.clone());
+
                 player.getInventory().addItem(reward).forEach((integer, itemStack) -> player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId()));
 
                 if (broadcast && rewardCount == 1) {
-
-                    ItemStack formattedReward = itemLabelUtility.formatItemStack(reward.clone());
 
                     plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize(messagesManager.getMessageAsString("Announce"),
                             Placeholder.unparsed("player",player.getName()),
@@ -151,7 +151,11 @@ public class VoterManager {
 
     public ItemStack generateReward() {
 
-        return rewardOptionsMap.get(rand.nextInt(rewardOptionsMap.size()));
+        ItemStack itemStack = rewardOptionsMap.get(rand.nextInt(rewardOptionsMap.size()));
+
+        itemStack.setAmount(64);
+
+        return itemStack;
     }
 
 

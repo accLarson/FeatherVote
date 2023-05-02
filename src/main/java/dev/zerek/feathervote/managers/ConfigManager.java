@@ -24,8 +24,7 @@ public class ConfigManager {
 
         plugin.saveDefaultConfig();
 
-        plugin.getConfig().getConfigurationSection("rewards").getKeys(false).forEach(k ->
-                rewardOptionsMap.add(new ItemStack(Material.valueOf(k), plugin.getConfig().getInt("rewards." + k))));
+        plugin.getConfig().getStringList("rewards").forEach(material -> rewardOptionsMap.add(new ItemStack(Material.valueOf(material))));
     }
 
     public List<ItemStack> getRewardOptionsMap() {

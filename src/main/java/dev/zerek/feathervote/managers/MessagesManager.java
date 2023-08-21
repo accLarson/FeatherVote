@@ -75,22 +75,22 @@ public class MessagesManager {
         Component leaderboard = getMessageAsComponent("PrefixLine");
 
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Header"),
-                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Voter"),80)),
+                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Voter"),96)),
                 Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(currentYearMonth),46,true)),
                 Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth1),46,true)),
                 Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth2),46,true)),
                 Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth3),46,true)),
-                Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text("Total"),40,true))));
+                Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text("Total"),38,true))));
 
         for (String uuid : uuids) {
 
             leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Entry"),
-                    Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()), 80)),
+                    Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()), 96)),
                     Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, currentYearMonth)), 46, true)),
                     Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth1)),46,true)),
                     Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth2)),46,true)),
                     Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth3)),46,true)),
-                    Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),40,true))));
+                    Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),38,true))));
         }
 
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>"));
@@ -108,21 +108,21 @@ public class MessagesManager {
         Component leaderboard = getMessageAsComponent("PrefixLine");
 
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Header"),
-                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Voter"),80)),
+                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Voter"),96)),
                 Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(currentYearMonth),46,true)),
                 Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth1),46,true)),
                 Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth2),46,true)),
                 Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth3),46,true)),
-                Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text("Total"),40,true))));
+                Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text("Total"),38,true))));
 
 
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Entry"),
-                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()), 80)),
+                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()), 96)),
                 Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, currentYearMonth)), 46, true)),
                 Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth1)),46,true)),
                 Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth2)),46,true)),
                 Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth3)),46,true)),
-                Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),40,true))));
+                Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),38,true))));
 
 
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>"));

@@ -27,3 +27,4 @@ VoteSites: "<#656b96>Vote on 4 sites daily for 64 logs each. (total 4 stacks):
 ErrorInvalid: "<#6C719D>Error: You have entered an invalid command."
 ErrorUnresolvedPlayer: "<#6C719D>Error: Unable to resolve requested username."
 ErrorNoPermission: "<#6C719D>Error: You do not have permission to use this command."
+ErrorLeaderboardUsage: "<#6C719D>Error: Invalid leaderboard usage. /vote leaderboard month/alltime."

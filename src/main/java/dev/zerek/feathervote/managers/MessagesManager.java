@@ -56,7 +56,7 @@ public class MessagesManager {
     }
 
 
-    public void displayTopVoters(CommandSender sender) {
+    public void displayMonthlyTopVoters(CommandSender sender) {
 
         VoterManager voterManager = plugin.getVoterManager();
 
@@ -65,9 +65,7 @@ public class MessagesManager {
         String previousYearMonth2 = plugin.getYearMonthUtility().getPreviousYearMonth(2);
         String previousYearMonth3 = plugin.getYearMonthUtility().getPreviousYearMonth(3);
 
-        List<String> uuidsCurrentMonth = voterManager.getCurrentMonthTop3Voters();
-
-        List<String> uuidsAllTime = voterManager.getAllTimeTop3Voters();
+        List<String> uuidsCurrentMonth = voterManager.getCurrentMonthTopVoters(7);
 
         Component leaderboard = getMessageAsComponent("PrefixLine");
 
@@ -94,6 +92,27 @@ public class MessagesManager {
                     Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),38,true))));
         }
 
+        leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>"));
+
+        leaderboard = leaderboard.append(getMessageAsComponent("SuffixLine"));
+
+        sender.sendMessage(leaderboard);
+    }
+
+
+    public void displayAllTimeTopVoters(CommandSender sender) {
+
+        VoterManager voterManager = plugin.getVoterManager();
+
+        String currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
+        String previousYearMonth1 = plugin.getYearMonthUtility().getPreviousYearMonth(1);
+        String previousYearMonth2 = plugin.getYearMonthUtility().getPreviousYearMonth(2);
+        String previousYearMonth3 = plugin.getYearMonthUtility().getPreviousYearMonth(3);
+
+        List<String> uuidsAllTime = voterManager.getAllTimeTopVoters(7);
+
+        Component leaderboard = getMessageAsComponent("PrefixLine");
+
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("AllTimeHeader"),
                 Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Top All-Time Voter"),96)),
                 Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(currentYearMonth),46,true)),
@@ -118,7 +137,6 @@ public class MessagesManager {
                     Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth3)),46,true)),
                     Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),38,true))));
         }
-
 
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>"));
 

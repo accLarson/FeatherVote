@@ -196,27 +196,28 @@ public class VoterManager {
     }
 
 
-    public List<String> getCurrentMonthTop3Voters() {
+    public List<String> getCurrentMonthTopVoters(int limit) {
 
         String currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
 
         return Vote.where("year_month = ?", currentYearMonth)
                 .orderBy("votes desc")
-                .limit(3)
+                .limit(limit)
                 .stream()
                 .map(vote -> vote.getString("mojang_uuid"))
                 .collect(Collectors.toList());
     }
 
 
-    public List<String> getAllTimeTop3Voters() {
+    public List<String> getAllTimeTopVoters(int limit) {
 
         List<Map> results = Base.findAll(
                 "SELECT mojang_uuid, SUM(votes) AS total_votes " +
                         "FROM votes " +
                         "GROUP BY mojang_uuid " +
                         "ORDER BY total_votes DESC " +
-                        "LIMIT 3"
+                        "LIMIT ?",
+                limit
         );
 
         List<String> topVoters = results.stream()

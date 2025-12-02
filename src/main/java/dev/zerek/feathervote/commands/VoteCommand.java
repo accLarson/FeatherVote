@@ -23,11 +23,27 @@ public class VoteCommand implements CommandExecutor {
 
         if (args.length == 0) plugin.getMessagesManager().displayVoteSites(sender);
 
-        else if (args.length == 1 && args[0].equalsIgnoreCase("leaderboard"))
+        else if (args.length >= 1 && args[0].equalsIgnoreCase("leaderboard")) {
 
-            if (sender.hasPermission("feather.vote.leaderboard")) plugin.getMessagesManager().displayTopVoters(sender);
+            if (!sender.hasPermission("feather.vote.leaderboard")) {
+                sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorNoPermission"));
+                return true;
+            }
 
-            else sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorNoPermission"));
+            if (args.length == 2) {
+                if (args[1].equalsIgnoreCase("month")) {
+                    plugin.getMessagesManager().displayMonthlyTopVoters(sender);
+                    return true;
+                }
+                else if (args[1].equalsIgnoreCase("alltime")) {
+                    plugin.getMessagesManager().displayAllTimeTopVoters(sender);
+                    return true;
+                }
+            }
+
+            // If they reached here, usage is invalid/missing second arg
+            sender.sendMessage(plugin.getMessagesManager().getMessageAsComponent("ErrorLeaderboardUsage"));
+        }
 
         else if (args.length == 1 && args[0].equalsIgnoreCase("history")) {
 

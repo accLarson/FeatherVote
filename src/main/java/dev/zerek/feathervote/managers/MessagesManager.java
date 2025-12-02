@@ -25,8 +25,6 @@ public class MessagesManager {
 
     private final Map<String,String> messagesMap = new HashMap<>();
 
-    public String currentYearMonth, previousYearMonth1, previousYearMonth2, previousYearMonth3;
-
     public MessagesManager(FeatherVote plugin) {
 
         this.plugin = plugin;
@@ -43,14 +41,6 @@ public class MessagesManager {
         yml = YamlConfiguration.loadConfiguration(file);
 
         this.generateMessagesMap();
-
-        this.currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
-
-        this.previousYearMonth1 = plugin.getYearMonthUtility().getPreviousYearMonth(1);
-
-        this.previousYearMonth2 = plugin.getYearMonthUtility().getPreviousYearMonth(2);
-
-        this.previousYearMonth3 = plugin.getYearMonthUtility().getPreviousYearMonth(3);
     }
 
     private void generateMessagesMap() {
@@ -70,28 +60,65 @@ public class MessagesManager {
 
         VoterManager voterManager = plugin.getVoterManager();
 
-        List<String> uuids = voterManager.getCurrentMonthTop10Voters();
+        String currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
+        String previousYearMonth1 = plugin.getYearMonthUtility().getPreviousYearMonth(1);
+        String previousYearMonth2 = plugin.getYearMonthUtility().getPreviousYearMonth(2);
+        String previousYearMonth3 = plugin.getYearMonthUtility().getPreviousYearMonth(3);
+
+        List<String> uuidsCurrentMonth = voterManager.getCurrentMonthTop3Voters();
+
+        List<String> uuidsAllTime = voterManager.getAllTimeTop3Voters();
 
         Component leaderboard = getMessageAsComponent("PrefixLine");
 
-        leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Header"),
-                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Voter"),96)),
+        leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("MonthHeader"),
+                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Top Month Voter"),96)),
                 Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(currentYearMonth),46,true)),
                 Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth1),46,true)),
                 Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth2),46,true)),
                 Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth3),46,true)),
                 Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text("Total"),38,true))));
 
-        for (String uuid : uuids) {
+        for (String uuid : uuidsCurrentMonth) {
+            String name = "NullUsername";
+            if (Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName() != null) {
+                name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+            }
 
-            leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Entry"),
-                    Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()), 96)),
+            leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("MonthEntry"),
+                    Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(name), 96)),
                     Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, currentYearMonth)), 46, true)),
                     Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth1)),46,true)),
                     Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth2)),46,true)),
                     Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth3)),46,true)),
                     Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),38,true))));
         }
+
+        leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("AllTimeHeader"),
+                Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Top All-Time Voter"),96)),
+                Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(currentYearMonth),46,true)),
+                Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth1),46,true)),
+                Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth2),46,true)),
+                Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth3),46,true)),
+                Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text("Total"),38,true))));
+
+
+        for (String uuid : uuidsAllTime) {
+
+            String name = "NullUsername";
+            if (Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName() != null) {
+                name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+            }
+
+            leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("AllTimeEntry"),
+                    Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(name), 96)),
+                    Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, currentYearMonth)), 46, true)),
+                    Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth1)),46,true)),
+                    Placeholder.component("previous_votes_2", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth2)),46,true)),
+                    Placeholder.component("previous_votes_3", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth3)),46,true)),
+                    Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),38,true))));
+        }
+
 
         leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>"));
 
@@ -105,9 +132,14 @@ public class MessagesManager {
 
         VoterManager voterManager = plugin.getVoterManager();
 
-        Component leaderboard = getMessageAsComponent("PrefixLine");
+        String currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
+        String previousYearMonth1 = plugin.getYearMonthUtility().getPreviousYearMonth(1);
+        String previousYearMonth2 = plugin.getYearMonthUtility().getPreviousYearMonth(2);
+        String previousYearMonth3 = plugin.getYearMonthUtility().getPreviousYearMonth(3);
 
-        leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Header"),
+        Component history = getMessageAsComponent("PrefixLine");
+
+        history = history.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("HistoryHeader"),
                 Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text("Voter"),96)),
                 Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(currentYearMonth),46,true)),
                 Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(previousYearMonth1),46,true)),
@@ -116,7 +148,7 @@ public class MessagesManager {
                 Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text("Total"),38,true))));
 
 
-        leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("Entry"),
+        history = history.append(MiniMessage.miniMessage().deserialize("<br>" + messagesMap.get("HistoryEntry"),
                 Placeholder.component("voter", plugin.getChatUtility().addSpacing(Component.text(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()), 96)),
                 Placeholder.component("month_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, currentYearMonth)), 46, true)),
                 Placeholder.component("previous_votes_1", plugin.getChatUtility().addSpacing(Component.text(voterManager.getMonthVoteCount(uuid, previousYearMonth1)),46,true)),
@@ -125,11 +157,11 @@ public class MessagesManager {
                 Placeholder.component("total_votes", plugin.getChatUtility().addSpacing(Component.text(voterManager.getTotalVoteCount(uuid)),38,true))));
 
 
-        leaderboard = leaderboard.append(MiniMessage.miniMessage().deserialize("<br>"));
+        history = history.append(MiniMessage.miniMessage().deserialize("<br>"));
 
-        leaderboard = leaderboard.append(getMessageAsComponent("SuffixLine"));
+        history = history.append(getMessageAsComponent("SuffixLine"));
 
-        sender.sendMessage(leaderboard);
+        sender.sendMessage(history);
     }
 
 
@@ -146,4 +178,3 @@ public class MessagesManager {
 
 
 }
-

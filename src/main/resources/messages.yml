@@ -9,8 +9,13 @@ PostponeSpecialAnnounce: "<white>• <#949bd1><player> <#656b96>64th vote | <#65
 
 PostponeRewardNotice: "<#846d91>You've received rewards for previous votes!"
 
-Header: "<#656b96><voter><#656b96><month_votes><dark_gray><previous_votes_1><dark_gray><previous_votes_2><dark_gray><previous_votes_3><#656b96><total_votes>"
-Entry: "<#949bd1><voter><#949bd1><month_votes><gray><previous_votes_1><gray><previous_votes_2><gray><previous_votes_3><#949bd1><total_votes>"
+MonthHeader: "<#656b96><voter><#656b96><month_votes><dark_gray><previous_votes_1><dark_gray><previous_votes_2><dark_gray><previous_votes_3><dark_gray><total_votes>"
+MonthEntry: "<#949bd1><voter><#949bd1><month_votes><gray><previous_votes_1><gray><previous_votes_2><gray><previous_votes_3><gray><total_votes>"
+AllTimeHeader: "<#656b96><voter><dark_gray><month_votes><dark_gray><previous_votes_1><dark_gray><previous_votes_2><dark_gray><previous_votes_3><#656b96><total_votes>"
+AllTimeEntry: "<#949bd1><voter><gray><month_votes><gray><previous_votes_1><gray><previous_votes_2><gray><previous_votes_3><#949bd1><total_votes>"
+HistoryHeader: "<#656b96><voter><#656b96><month_votes><dark_gray><previous_votes_1><dark_gray><previous_votes_2><dark_gray><previous_votes_3><#656b96><total_votes>"
+HistoryEntry: "<#949bd1><voter><#949bd1><month_votes><gray><previous_votes_1><gray><previous_votes_2><gray><previous_votes_3><#949bd1><total_votes>"
+
 
 VoteSites: "<#656b96>Vote on 4 sites daily for 64 logs each. (total 4 stacks):
             <br><#949bd1><hover:show_text:'Click to Vote <gray>https://www.planetminecraft.com/server/straight-up-survival-no-protection-smp-4081761/vote/?username=<username>'><click:open_url:'https://www.planetminecraft.com/server/straight-up-survival-no-protection-smp-4081761/vote/?username=<username>'>planetminecraft.com</click></hover>

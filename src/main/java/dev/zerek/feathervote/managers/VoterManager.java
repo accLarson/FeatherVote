@@ -12,6 +12,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.javalite.activejdbc.Base;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,8 +27,6 @@ public class VoterManager {
 
     private List<ItemStack> rewardOptionsMap = new ArrayList<>();
 
-    public String currentYearMonth, previousYearMonth;
-
     private ItemLabelUtility itemLabelUtility;
 
 
@@ -37,10 +36,6 @@ public class VoterManager {
         this.plugin = plugin;
 
         this.init();
-
-        this.currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
-
-        this.previousYearMonth = plugin.getYearMonthUtility().getPreviousYearMonth(1);
     }
 
 
@@ -65,7 +60,11 @@ public class VoterManager {
 
         String uuid = offlinePlayer.getUniqueId().toString();
 
-        if (!isVoter(offlinePlayer.getUniqueId().toString(), currentYearMonth)) new Vote().set("mojang_uuid", uuid , "year_month", currentYearMonth).insert();
+        String currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
+
+        if (!isVoter(uuid, currentYearMonth)) {
+            new Vote().set("mojang_uuid", uuid , "year_month", currentYearMonth).insert();
+        }
 
         Vote vote = Vote.findByCompositeKeys(uuid,currentYearMonth);
 
@@ -77,7 +76,9 @@ public class VoterManager {
 
         if (vote.getInteger("votes") == 64) vote.setBoolean("special_reward_owed", 1).saveIt();
 
-        if (offlinePlayer.isOnline() && !((Player)offlinePlayer).hasPermission("feather.vote.postponereward")) this.rewardPlayer((Player) offlinePlayer, currentYearMonth,true);
+        if (offlinePlayer.isOnline() && !((Player)offlinePlayer).hasPermission("feather.vote.postponereward")) {
+            this.rewardPlayer((Player) offlinePlayer, currentYearMonth,true);
+        }
 
         else this.postponeAnnounceVote(offlinePlayer, currentYearMonth);
     }
@@ -165,7 +166,7 @@ public class VoterManager {
 
         ItemMeta itemMeta = specialReward.getItemMeta();
 
-        itemMeta.addEnchant(Enchantment.DURABILITY,10,true);
+        itemMeta.addEnchant(Enchantment.UNBREAKING,10,true);
 
         itemMeta.setUnbreakable(true);
 
@@ -195,15 +196,36 @@ public class VoterManager {
     }
 
 
-    public List<String> getCurrentMonthTop10Voters() {
+    public List<String> getCurrentMonthTop3Voters() {
+
+        String currentYearMonth = plugin.getYearMonthUtility().getCurrentYearMonth();
 
         return Vote.where("year_month = ?", currentYearMonth)
                 .orderBy("votes desc")
-                .limit(10)
+                .limit(3)
                 .stream()
                 .map(vote -> vote.getString("mojang_uuid"))
                 .collect(Collectors.toList());
     }
+
+
+    public List<String> getAllTimeTop3Voters() {
+
+        List<Map> results = Base.findAll(
+                "SELECT mojang_uuid, SUM(votes) AS total_votes " +
+                        "FROM votes " +
+                        "GROUP BY mojang_uuid " +
+                        "ORDER BY total_votes DESC " +
+                        "LIMIT 3"
+        );
+
+        List<String> topVoters = results.stream()
+                .map(result -> result.get("mojang_uuid").toString()) // Convert mojang_uuid to String
+                .collect(Collectors.toList());
+
+        return topVoters;
+    }
+
 
 
     public boolean isRewardOwed(OfflinePlayer offlinePlayer) {
@@ -234,5 +256,3 @@ public class VoterManager {
         return Vote.where("mojang_uuid = ?", uuid).stream().mapToInt(vote -> vote.getInteger("votes")).sum();
     }
 }
-
-

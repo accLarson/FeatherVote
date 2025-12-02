@@ -9,31 +9,23 @@ public class YearMonthUtility {
 
     private final FeatherVote plugin;
 
-    private String currentYearMonth;
-
-
     public YearMonthUtility(FeatherVote plugin) {
-
         this.plugin = plugin;
-
-        this.init();
     }
 
-    private void init() {
-
-        this. currentYearMonth = LocalDate.now(ZoneId.of("Canada/Eastern")).getYear() + "/" + LocalDate.now(ZoneId.of("Canada/Eastern")).getMonthValue();
+    private LocalDate nowEastern() {
+        return LocalDate.now(ZoneId.of("Canada/Eastern"));
     }
 
     public String getPreviousYearMonth(int reverseMonths) {
+        if (reverseMonths == 0) return getCurrentYearMonth();
 
-        if (reverseMonths == 0) return currentYearMonth;
-
-        int year = LocalDate.now(ZoneId.of("Canada/Eastern")).getYear() - reverseMonths/12;
-
-        return year + "/" + LocalDate.now(ZoneId.of("Canada/Eastern")).getMonth().minus(reverseMonths).getValue();
+        LocalDate date = nowEastern().minusMonths(reverseMonths);
+        return date.getYear() + "/" + date.getMonthValue();
     }
 
     public String getCurrentYearMonth() {
-        return currentYearMonth;
+        LocalDate date = nowEastern();
+        return date.getYear() + "/" + date.getMonthValue();
     }
 }

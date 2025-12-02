@@ -6,7 +6,7 @@
 
     <groupId>dev.zerek</groupId>
     <artifactId>FeatherVote</artifactId>
-    <version>3.0.3</version>
+    <version>3.2.0</version>
     <packaging>jar</packaging>
 
     <name>FeatherVote</name>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
+            <version>1.21.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

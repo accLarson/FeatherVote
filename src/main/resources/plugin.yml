@@ -1,7 +1,7 @@
 name: FeatherVote
 version: '${project.version}'
 main: dev.zerek.feathervote.FeatherVote
-api-version: 1.19
+api-version: 1.20
 depend: [ Votifier ]
 authors: [ Zerek ]
 description: Reward voters with items. Includes randomizer.

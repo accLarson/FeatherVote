@@ -31,7 +31,7 @@ public class VoteTabCompleter implements TabCompleter {
                     options.add("month");
                     options.add("alltime");
 
-                    for (String option : options) if (option.toLowerCase().startsWith(args[0].toLowerCase())) match.add(option);
+                    for (String option : options) if (option.toLowerCase().startsWith(args[1].toLowerCase())) match.add(option);
                     return match;
                 }
                 return new ArrayList<>();
